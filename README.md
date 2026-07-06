@@ -101,5 +101,14 @@ their GitHub repos are untouched and unarchived, each with an updated
 description noting the merge. Render: 17/25 services (down from 21,
 net -4).
 
-Step 3 (distributing `shared/claude_client.py` to `facility_risk_indicator`)
-hasn't started yet.
+Step 3 (distributing `claude_client.py` to `facility_risk_indicator`)
+complete: consistency pass, not a fix (its own `claude_assessor.py` already
+caught broad Exception and fell back to a deterministic narrative
+correctly) -- swapped its raw `anthropic.Anthropic()` call site for the
+shared wrapper. 62/62 tests passing, zero regressions. Pushed to
+`JakPot42/facility-risk-indicator`.
+
+**Phase 6, Cluster 3 is fully shipped.** All three steps complete across
+all 7 in-scope tools (5 merged and live, 1 CLI consistency-passed, 1 Rust
+CLI confirmed standalone by design); `sead3_auditor` remains excluded per
+the architecture decision above.
