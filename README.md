@@ -87,11 +87,19 @@ decision above.
 ## Status
 
 Step 1 (shared-core reference library) and Step 2 (the 5-app web merge)
-complete: 328 tests passing, matching each source project's original test
-count exactly (18 ato + 29 rai + 64 cve + 116 hh + 80 clearance + 21
-shared-core). Verified end-to-end over real HTTP for all 5 tools (index,
-detail, report, PDF download, static assets, and the live-mode
-Claude-error graceful-failure path) before considering this step done.
+complete and **live**: 328 tests passing, matching each source project's
+original test count exactly (18 ato + 29 rai + 64 cve + 116 hh + 80
+clearance + 21 shared-core). Verified end-to-end over real HTTP for all 5
+tools (index, detail, report, PDF download, static assets, a real
+live-mode Claude API call, and the graceful-failure path when the key is
+absent) both before and after decommissioning the 5 standalone services.
+
+Deployed at `https://cleared-facility-suite.onrender.com`. The 5 standalone
+Render services it replaces (ato-accelerator, rai-compliance,
+cve-prioritizer, harvest-horizon, clearance-advisor) have been deleted;
+their GitHub repos are untouched and unarchived, each with an updated
+description noting the merge. Render: 17/25 services (down from 21,
+net -4).
 
 Step 3 (distributing `shared/claude_client.py` to `facility_risk_indicator`)
 hasn't started yet.
