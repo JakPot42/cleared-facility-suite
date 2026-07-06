@@ -27,13 +27,13 @@ That leaves the same two-part shape as Analyst's Desk (Phase 6, Cluster 2):
    library, copied out into each consuming repo the same way
    `entity_resolver.py` and Analyst's Desk's `claude_client.py` have
    already been.
-2. **A web merge** (coming next) of `ato_accelerator`, `rai_compliance`,
+2. **A web merge** of `ato_accelerator`, `rai_compliance`,
    `cve_prioritizer`, `harvest_horizon`, and `clearance_advisor` into one
    deployment -- shared infrastructure, not shared data. None of these
    five share a real entity (a `System` in ATO isn't the same kind of
    object as a `Scan` in CVE Prioritizer, even sharing a naming
    convention), so there's no unifying entity-centric home page here
-   either.
+   either. See "The 5-app web merge" below.
 
 `facility_risk_indicator` stays a CLI tool -- it has no persistence and no
 web layer to merge; it only receives `shared/claude_client.py` in Step 3.
@@ -54,9 +54,44 @@ web layer to merge; it only receives `shared/claude_client.py` in Step 3.
   permissive `.lower() in (...)` read) -- this doesn't force every tool
   onto the same UX, it just stops the strict-vs-permissive drift.
 
+## The 5-app web merge
+
+One FastAPI process, one shared SQLite DB (`database.py` at repo root),
+five per-tool packages (`ato/`, `rai/`, `cve/`, `hh/`, `clearance/`), each
+with its own `router.py` (`APIRouter(prefix="/ato")` etc.), `models.py`
+(tables prefixed `ato_*`, `rai_*`, `cve_*`, `hh_*`, `clearance_*` -- no
+literal collisions existed this time, but every table was prefixed anyway,
+same discipline as the last two clusters), and `config.py`. Templates live
+under `templates/<tool>/` with every internal `href`/`action`/`{% extends %}`
+prefixed to match; static assets under `static/<tool>/`.
+
+Route collisions resolved: `/systems/*` (ato vs rai, 4-way), `/`,
+`/api/stats`, `/seed` (collided across most of the 5) -- all now live under
+their tool's own prefix. ORM style is left as each source project had it
+(`cve` and `clearance` use legacy `Column()`, the other three use modern
+`Mapped[]`/`mapped_column()`) -- SQLAlchemy 2.0 supports both against one
+shared `Base` with no reconciliation needed.
+
+Every Claude call site across all 5 tools was routed through
+`shared.claude_client.call_claude()` during this merge (not left as a
+"consistency pass, not a fix" upgrade like Analyst's Desk did for some of
+its CLI tools) -- this closes the exact bug class Step 0 fixed standalone
+in `ato_accelerator` and `clearance_advisor` by construction, portfolio-wide,
+for this cluster.
+
+Landing page at `/` is a plain links page to the 5 tools plus a note on
+why `sead3_auditor` and `stig_checker` are deliberately not here -- no
+forced unifying entity-centric home page, matching the architecture
+decision above.
+
 ## Status
 
-Step 1 (shared-core reference library) complete: 21 tests passing, all
-mocked -- no real network/API calls. Step 2 (the 5-app web merge) and
-Step 3 (distributing `claude_client.py` to `facility_risk_indicator`)
-haven't started yet.
+Step 1 (shared-core reference library) and Step 2 (the 5-app web merge)
+complete: 328 tests passing, matching each source project's original test
+count exactly (18 ato + 29 rai + 64 cve + 116 hh + 80 clearance + 21
+shared-core). Verified end-to-end over real HTTP for all 5 tools (index,
+detail, report, PDF download, static assets, and the live-mode
+Claude-error graceful-failure path) before considering this step done.
+
+Step 3 (distributing `shared/claude_client.py` to `facility_risk_indicator`)
+hasn't started yet.

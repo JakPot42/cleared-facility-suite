@@ -1,0 +1,50 @@
+{% extends "cve/base.html" %}
+{% block title %}Software Inventory — {{ scan.system_name }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Software Inventory</h1>
+    <p class="page-sub">{{ scan.system_name }} &middot; Criticality: <span class="badge badge-{{ scan.criticality_color }}">{{ scan.system_criticality }}</span></p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="form-card">
+  <div class="extract-info">
+    <p>Enter your software inventory in any format. Claude will extract CVE identifiers and
+    component context. You will review the extracted list before the scoring engine runs.</p>
+    <ul>
+      <li><strong>Free text:</strong> "Apache Log4j 2.14.1 on app servers, Microsoft Exchange Server 2016..."</li>
+      <li><strong>CVE list:</strong> "CVE-2021-44228, CVE-2022-30190, CVE-2021-26855"</li>
+      <li><strong>CPE format:</strong> "cpe:2.3:a:apache:log4j:2.14.1:*:*:*:*:*:*:*"</li>
+    </ul>
+  </div>
+
+  <form method="post" action="/cve/scans/{{ scan.id }}/inventory">
+    <div class="form-group">
+      <label for="inventory_text">Software Inventory <span class="required">*</span></label>
+      <textarea id="inventory_text" name="inventory_text" rows="10"
+                placeholder="Describe your software stack, versions, and configurations..."
+                class="form-input font-mono">{{ scan.inventory_text or '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+      <a href="/cve/" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Extract CVEs →</button>
+    </div>
+  </form>
+</div>
+
+<div class="process-steps">
+  <div class="step step-done">1. System Profile</div>
+  <div class="step step-active">2. Software Inventory</div>
+  <div class="step">3. Confirm CVEs</div>
+  <div class="step">4. Results</div>
+  <div class="step">5. Patch Brief</div>
+</div>
+
+{% endblock %}

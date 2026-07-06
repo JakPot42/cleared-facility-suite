@@ -1,0 +1,106 @@
+{% extends "cve/base.html" %}
+{% block title %}CVE Prioritizer — Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Vulnerability Triage Dashboard</h1>
+    <p class="page-sub">CISA KEV + EPSS prioritized patch planning</p>
+  </div>
+  <a href="/cve/scans/new" class="btn btn-primary">New Scan</a>
+</div>
+
+<div class="info-cards">
+  <div class="info-card">
+    <div class="info-card-icon kev-icon">KEV</div>
+    <div>
+      <div class="info-card-label">CISA KEV Confirmed</div>
+      <div class="info-card-value">{{ total_kev }}</div>
+      <div class="info-card-note">Actively exploited in the wild</div>
+    </div>
+  </div>
+  <div class="info-card">
+    <div class="info-card-icon critical-icon">!</div>
+    <div>
+      <div class="info-card-label">CRITICAL Priority</div>
+      <div class="info-card-value">{{ critical_vulns }}</div>
+      <div class="info-card-note">Patch within 24–48 hours</div>
+    </div>
+  </div>
+  <div class="info-card">
+    <div class="info-card-icon epss-icon">%</div>
+    <div>
+      <div class="info-card-label">EPSS Engine</div>
+      <div class="info-card-value">FIRST.org</div>
+      <div class="info-card-note">30-day exploitation probability</div>
+    </div>
+  </div>
+</div>
+
+<div class="standards-bar">
+  <span class="std-label">Data Sources:</span>
+  <span class="std-badge">CISA KEV Catalog</span>
+  <span class="std-badge">FIRST.org EPSS</span>
+  <span class="std-badge">Deterministic Priority Engine</span>
+  <span class="std-badge">Claude Haiku (Brief Synthesis)</span>
+</div>
+
+{% if scans %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>System</th>
+      <th>Type</th>
+      <th>Criticality</th>
+      <th>CVEs</th>
+      <th>KEV</th>
+      <th>CRITICAL</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for scan in scans %}
+    <tr>
+      <td><a href="/cve/scans/{{ scan.id }}">{{ scan.system_name }}</a></td>
+      <td>{{ scan.system_type }}</td>
+      <td><span class="badge badge-{{ scan.criticality_color }}">{{ scan.system_criticality }}</span></td>
+      <td>{{ scan.total_count }}</td>
+      <td>
+        {% if scan.kev_count > 0 %}
+        <span class="kev-badge">{{ scan.kev_count }} KEV</span>
+        {% else %}—{% endif %}
+      </td>
+      <td>
+        {% if scan.critical_count > 0 %}
+        <span class="badge badge-red">{{ scan.critical_count }}</span>
+        {% else %}0{% endif %}
+      </td>
+      <td><span class="status-pill">{{ scan.status.replace('_', ' ') }}</span></td>
+      <td>
+        <a href="/cve/scans/{{ scan.id }}" class="btn btn-sm">View</a>
+        {% if scan.status in ['ASSESSED', 'BRIEF_READY'] %}
+        <a href="/cve/scans/{{ scan.id }}/report.pdf" class="btn btn-sm btn-outline">PDF</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <p>No scans yet. <a href="/cve/scans/new">Start a new vulnerability scan</a> or
+  <form method="post" action="/cve/seed" style="display:inline">
+    <button type="submit" class="btn btn-sm">load demo scenarios</button>
+  </form>
+  </p>
+</div>
+{% endif %}
+
+<div class="doctrine-note">
+  <strong>Architecture:</strong> CISA KEV status and EPSS scores are fetched from authoritative sources.
+  A deterministic scoring engine assigns priority tiers. Claude synthesizes a plain-language patch brief
+  explaining the engine's output — Claude never makes the priority determination.
+</div>
+
+{% endblock %}

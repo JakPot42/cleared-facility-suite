@@ -1,0 +1,141 @@
+{% extends "cve/base.html" %}
+{% block title %}{{ scan.system_name }} — CVE Prioritizer{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>{{ scan.system_name }}</h1>
+    <p class="page-sub">{{ scan.system_type }} &middot; Criticality: <span class="badge badge-{{ scan.criticality_color }}">{{ scan.system_criticality }}</span></p>
+  </div>
+  <div class="header-actions">
+    {% if scan.status in ['ASSESSED', 'BRIEF_READY'] %}
+    <a href="/cve/scans/{{ scan.id }}/report.pdf" class="btn btn-outline">Download PDF</a>
+    {% endif %}
+    {% if scan.status == 'BRIEF_READY' %}
+    <a href="/cve/scans/{{ scan.id }}/brief" class="btn btn-outline">View Brief</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Scorecard row -->
+<div class="scorecard-row">
+  <div class="scorecard-card critical">
+    <div class="scorecard-num">{{ scan.critical_count }}</div>
+    <div class="scorecard-label">CRITICAL</div>
+    <div class="scorecard-note">24–48 hrs</div>
+  </div>
+  <div class="scorecard-card high">
+    <div class="scorecard-num">{{ scan.high_count }}</div>
+    <div class="scorecard-label">HIGH</div>
+    <div class="scorecard-note">7 days</div>
+  </div>
+  <div class="scorecard-card medium">
+    <div class="scorecard-num">{{ scan.medium_count }}</div>
+    <div class="scorecard-label">MEDIUM</div>
+    <div class="scorecard-note">30 days</div>
+  </div>
+  <div class="scorecard-card low">
+    <div class="scorecard-num">{{ scan.low_count }}</div>
+    <div class="scorecard-label">LOW</div>
+    <div class="scorecard-note">Maintenance window</div>
+  </div>
+  <div class="scorecard-card kev-card">
+    <div class="scorecard-num">{{ scan.kev_count }}</div>
+    <div class="scorecard-label">KEV</div>
+    <div class="scorecard-note">Active exploitation</div>
+  </div>
+</div>
+
+{% if scan.system_description %}
+<div class="detail-section">
+  <h3>System Description</h3>
+  <p>{{ scan.system_description }}</p>
+</div>
+{% endif %}
+
+<!-- Vulnerability inventory -->
+<div class="detail-section">
+  <h2>Prioritized Vulnerability Inventory</h2>
+
+  {% if scan.items %}
+  <table class="data-table vuln-table">
+    <thead>
+      <tr>
+        <th>CVE ID</th>
+        <th>Component</th>
+        <th>KEV</th>
+        <th>Ransomware</th>
+        <th>EPSS</th>
+        <th>Score</th>
+        <th>Tier</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in scan.items %}
+      <tr class="tier-row-{{ item.priority_tier | lower }}">
+        <td>
+          <strong>{{ item.cve_id }}</strong>
+          {% if item.kev_vulnerability_name %}
+          <div class="vuln-name">{{ item.kev_vulnerability_name }}</div>
+          {% endif %}
+        </td>
+        <td>{{ item.component or '—' }}</td>
+        <td>
+          {% if item.in_kev %}
+          <span class="kev-badge">KEV</span>
+          <div class="kev-date">{{ item.kev_date_added }}</div>
+          {% else %}
+          <span class="no-kev">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if item.kev_ransomware_use %}
+          <span class="ransomware-badge">Known</span>
+          {% else %}
+          <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+          <span class="epss-score">{{ item.epss_pct }}%</span>
+          <div class="epss-pct">{{ item.epss_percentile_pct }}th pct</div>
+        </td>
+        <td>
+          <div class="priority-score score-{{ item.priority_tier | lower }}">{{ item.priority_score }}</div>
+        </td>
+        <td><span class="tier-badge tier-{{ item.priority_tier | lower }}">{{ item.priority_tier }}</span></td>
+      </tr>
+      <tr class="rationale-row">
+        <td colspan="7" class="rationale-cell">{{ item.engine_rationale }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">No vulnerabilities assessed yet.</div>
+  {% endif %}
+</div>
+
+<!-- Patch Brief section -->
+<div class="detail-section">
+  <div class="section-header-row">
+    <h2>Patch Prioritization Brief</h2>
+    {% if scan.status in ['ASSESSED', 'BRIEF_READY'] %}
+    <form method="post" action="/cve/scans/{{ scan.id }}/brief" style="display:inline">
+      <button type="submit" class="btn btn-sm btn-primary">
+        {% if scan.patch_brief_text %}Regenerate Brief{% else %}Generate Brief{% endif %}
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  {% if scan.patch_brief_text %}
+  <a href="/cve/scans/{{ scan.id }}/brief" class="btn btn-outline btn-sm">View Full Brief →</a>
+  <div class="brief-preview">
+    {{ scan.patch_brief_text[:400] }}{% if scan.patch_brief_text|length > 400 %}…{% endif %}
+  </div>
+  {% else %}
+  <p class="text-muted">Generate a plain-language patch brief with KEV and EPSS citations.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

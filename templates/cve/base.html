@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CVE Prioritizer{% endblock %}</title>
+  <link rel="stylesheet" href="/static/cve/css/app.css">
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <a href="/cve/">CVE Prioritizer</a>
+      <span class="topbar-sub">KEV + EPSS Vulnerability Triage</span>
+    </div>
+    <div class="topbar-links">
+      <a href="/cve/">Dashboard</a>
+      <a href="/cve/scans/new" class="btn btn-sm">New Scan</a>
+    </div>
+  </nav>
+
+  {% if demo_mode %}
+  <div class="demo-banner">
+    DEMO MODE — Pre-seeded scenarios. No real CVE data is fetched. Not for operational use.
+  </div>
+  {% endif %}
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>CVE data: <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank">CISA KEV Catalog</a> &middot;
+    EPSS scores: <a href="https://www.first.org/epss/" target="_blank">FIRST.org EPSS</a> &middot;
+    Priority engine is deterministic — Claude explains, engine decides.</p>
+  </footer>
+</body>
+</html>

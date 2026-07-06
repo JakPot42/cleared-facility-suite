@@ -1,0 +1,60 @@
+{% extends "cve/base.html" %}
+{% block title %}Confirm CVEs — {{ scan.system_name }}{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Confirm Extracted CVEs</h1>
+    <p class="page-sub">{{ scan.system_name }} &middot; {{ extracted | length }} CVE(s) extracted</p>
+  </div>
+</div>
+
+<div class="confirm-notice">
+  <strong>Human confirmation required.</strong> Review the CVEs extracted from your inventory below.
+  The priority scoring engine will run only after you confirm this list.
+  Claude proposed these CVEs — the engine makes all priority determinations.
+</div>
+
+{% if extracted %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>CVE ID</th>
+      <th>Component</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in extracted %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td><strong>{{ item.cve_id }}</strong></td>
+      <td>{{ item.component or '—' }}</td>
+      <td>{{ item.description or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="form-actions" style="margin-top: 1.5rem;">
+  <a href="/cve/scans/{{ scan.id }}/inventory" class="btn btn-outline">← Edit Inventory</a>
+  <form method="post" action="/cve/scans/{{ scan.id }}/confirm" style="display:inline">
+    <button type="submit" class="btn btn-primary">Confirm &amp; Run Assessment →</button>
+  </form>
+</div>
+{% else %}
+<div class="alert alert-error">
+  No CVEs were extracted from the inventory. Please <a href="/cve/scans/{{ scan.id }}/inventory">revise the inventory</a>.
+</div>
+{% endif %}
+
+<div class="process-steps">
+  <div class="step step-done">1. System Profile</div>
+  <div class="step step-done">2. Software Inventory</div>
+  <div class="step step-active">3. Confirm CVEs</div>
+  <div class="step">4. Results</div>
+  <div class="step">5. Patch Brief</div>
+</div>
+
+{% endblock %}

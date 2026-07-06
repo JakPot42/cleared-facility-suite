@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cleared Facility Suite</title>
+  <link rel="icon" href="data:,">
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; color: #1a2433; background: #f7f9fb; }
+    h1 { margin-bottom: 0.25rem; }
+    .subtitle { color: #5a6b7d; margin-top: 0; }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .tool-card { background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 1rem 1.25rem; text-decoration: none; color: inherit; display: block; }
+    .tool-card:hover { border-color: #4a7ab5; }
+    .tool-card h3 { margin: 0 0 0.4rem 0; }
+    .tool-card p { margin: 0; font-size: 0.9rem; color: #5a6b7d; }
+    .standalone-note { background: #fff8e6; border: 1px solid #e8d38a; border-radius: 8px; padding: 1rem 1.25rem; margin-top: 2rem; font-size: 0.9rem; }
+    .standalone-note a { color: #8a6d1a; }
+  </style>
+</head>
+<body>
+  <h1>Cleared Facility Suite</h1>
+  <p class="subtitle">Phase 6, Cluster 3 -- personnel, compliance, and vulnerability tooling for cleared facilities</p>
+
+  <div class="tool-grid">
+    <a class="tool-card" href="/ato/">
+      <h3>ATO Accelerator</h3>
+      <p>NIST 800-53 / RMF compliance assistant -- FIPS 199 categorization and SSP narratives.</p>
+    </a>
+    <a class="tool-card" href="/rai/">
+      <h3>RAI Compliance Assistant</h3>
+      <p>DoD Responsible AI Principles assessment across 20 criteria.</p>
+    </a>
+    <a class="tool-card" href="/cve/">
+      <h3>CVE Prioritizer</h3>
+      <p>CISA KEV + FIRST.org EPSS deterministic vulnerability patch prioritization.</p>
+    </a>
+    <a class="tool-card" href="/hh/">
+      <h3>Harvest Horizon</h3>
+      <p>Post-quantum cryptographic migration assessor -- FIPS 203/204/205 and HNDL exposure.</p>
+    </a>
+    <a class="tool-card" href="/clearance/">
+      <h3>Security Clearance Readiness Advisor</h3>
+      <p>Plain-language SEAD 4 adjudicative guideline briefings and interview prep.</p>
+    </a>
+  </div>
+
+  <div class="standalone-note">
+    <strong>Two related tools are deliberately not part of this merged deployment:</strong>
+    <ul>
+      <li><strong>SEAD 3 Auditor</strong> -- exports raw, unmasked individual PII with no
+        authentication on any route; a different risk category than the tools above, kept
+        fully standalone. See <a href="https://github.com/JakPot42/sead3-auditor">GitHub</a>.</li>
+      <li><strong>STIG Checker</strong> (Rust) -- a standalone compiled CLI binary with no
+        web/FFI integration surface; referenced here, not merged. See
+        <a href="https://github.com/JakPot42/stig-checker">GitHub</a>.</li>
+    </ul>
+  </div>
+</body>
+</html>
