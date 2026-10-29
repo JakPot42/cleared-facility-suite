@@ -65,9 +65,9 @@ class AISystem(Base):
     def rai_status(self) -> str:
         score = self.rai_score
         if score >= 85:
-            return "Compliant"
+            return "Criteria met"
         if score >= 50:
-            return "Partially Compliant"
+            return "Criteria partly met"
         return "At Risk"
 
 

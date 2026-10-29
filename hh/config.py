@@ -128,9 +128,18 @@ COMPLIANCE_STATUSES = {
     "PQC_APPROVED": "PQC Approved",
     "QUANTUM_SAFE": "Quantum Safe",
     "REDUCED_SECURITY": "Reduced Security",
-    "NON_COMPLIANT": "Non-Compliant (Quantum Vulnerable)",
+    "NON_COMPLIANT": "Quantum-vulnerable",
     "DEPRECATED": "Deprecated",
     "UNKNOWN": "Unknown",
+}
+
+# Display labels for an assessment's overall tier (stored keys are unchanged)
+COMPLIANCE_TIER_LABELS = {
+    "COMPLIANT": "NO VULNERABLE ALGORITHMS FOUND",
+    "CRITICAL_GAP": "CRITICAL GAP",
+    "NON_COMPLIANT": "QUANTUM-VULNERABLE",
+    "TRANSITIONAL": "TRANSITIONAL",
+    "UNASSESSED": "UNASSESSED",
 }
 
 # Quantum vulnerability levels

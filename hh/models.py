@@ -9,6 +9,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
+from .config import COMPLIANCE_STATUSES, COMPLIANCE_TIER_LABELS
+
 
 class Assessment(Base):
     __tablename__ = "hh_assessments"
@@ -93,6 +95,10 @@ class Assessment(Base):
             return "NON_COMPLIANT"
         return "TRANSITIONAL"
 
+    @property
+    def compliance_tier_label(self) -> str:
+        return COMPLIANCE_TIER_LABELS.get(self.compliance_tier, self.compliance_tier.replace("_", " "))
+
 
 class CryptoItem(Base):
     __tablename__ = "hh_crypto_items"
@@ -134,6 +140,10 @@ class CryptoItem(Base):
             "DEPRECATED": "purple",
             "UNKNOWN": "grey",
         }.get(self.compliance_status, "grey")
+
+    @property
+    def compliance_label(self) -> str:
+        return COMPLIANCE_STATUSES.get(self.compliance_status, self.compliance_status.replace("_", " "))
 
     @property
     def replacements_list(self) -> list[str]:

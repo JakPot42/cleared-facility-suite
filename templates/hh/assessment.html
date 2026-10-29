@@ -39,9 +39,9 @@
   <!-- Compliance Summary -->
   <div class="score-card score-compliance">
     <div class="score-label">Compliance Status</div>
-    <div class="score-tier compliance-{{ assessment.compliance_tier | lower | replace('_','-') }}">{{ assessment.compliance_tier | replace("_"," ") }}</div>
+    <div class="score-tier compliance-{{ assessment.compliance_tier | lower | replace('_','-') }}">{{ assessment.compliance_tier_label }}</div>
     <div class="compliance-breakdown">
-      <div class="cb-row cb-red"><span class="cb-count">{{ assessment.non_compliant_count }}</span> non-compliant / deprecated</div>
+      <div class="cb-row cb-red"><span class="cb-count">{{ assessment.non_compliant_count }}</span> quantum-vulnerable / deprecated</div>
       <div class="cb-row cb-amber"><span class="cb-count">{{ assessment.reduced_count }}</span> reduced security</div>
       <div class="cb-row cb-green"><span class="cb-count">{{ assessment.pqc_approved_count + assessment.quantum_safe_count }}</span> quantum-safe / PQC approved</div>
     </div>
@@ -86,7 +86,7 @@
         <span class="badge badge-{{ item.vulnerability_color }}">{{ item.quantum_vulnerability }}</span>
       </td>
       <td>
-        <span class="badge badge-{{ item.compliance_color }}">{{ item.compliance_status | replace("_"," ") }}</span>
+        <span class="badge badge-{{ item.compliance_color }}">{{ item.compliance_label | upper }}</span>
       </td>
       <td>
         {% if item.replacements_list %}

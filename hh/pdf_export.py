@@ -151,7 +151,7 @@ def generate_pdf(assessment: Assessment) -> bytes:
                 Paragraph(item.component, ParagraphStyle("cell", fontSize=8, leading=10)),
                 item.algorithm,
                 item.use_case,
-                item.compliance_status.replace("_", " "),
+                item.compliance_label.upper(),
                 item.quantum_vulnerability,
             ])
             status_bg = {
@@ -192,7 +192,7 @@ def generate_pdf(assessment: Assessment) -> bytes:
         ["PQC Approved (FIPS 203/204/205)", str(assessment.pqc_approved_count)],
         ["Quantum Safe (adequate symmetric/hash)", str(assessment.quantum_safe_count)],
         ["Reduced Security (upgrade recommended)", str(assessment.reduced_count)],
-        ["Non-Compliant (quantum-vulnerable)", str(assessment.non_compliant_count)],
+        ["Quantum-vulnerable or deprecated", str(assessment.non_compliant_count)],
     ]
     sum_table = Table(summary_rows, colWidths=[4.5 * inch, 1.5 * inch])
     sum_table.setStyle(TableStyle([
